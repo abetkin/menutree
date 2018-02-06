@@ -3,11 +3,14 @@
 from django.db import migrations
 from django.conf import settings
 
+from django.contrib.auth.models import User
+
 def create_admin(apps, se):
     if not settings.DEBUG:
         return
-    User = apps.get_model('auth', 'User')
-    User.objects.create(username='admin', password='admin', is_staff=True)
+    admin = User(username='admin', is_staff=True, is_superuser=True)
+    admin.set_password('admin')
+    admin.save()
 
 class Migration(migrations.Migration):
 

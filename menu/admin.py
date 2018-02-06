@@ -13,7 +13,11 @@ class MenuItemAdmin(admin.ModelAdmin):
         MenuItems
     ]
 
-    # def get_queryset(self, request):
-    #     import ipdb; ipdb.set_trace()
-    #     qs = super().get_queryset(request)
-    #     return [qs.first()]
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.order_by('menuorder__global_order')
+
+
+@admin.register(MenuOrder)
+class MenuOrderAdmin(admin.ModelAdmin):
+    pass

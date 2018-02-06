@@ -37,9 +37,11 @@ class MenuItem(models.Model):
 
     @classmethod
     def post_save(cls, sender, instance=None, **kw):
-        OrderedItem(menuitem_id=instance.id, global_order=instance.get_global_order())
+        mo = MenuOrder(menu_item=instance, global_order=instance.get_global_order())
+        mo.save()
 
-class OrderedItem(MenuItem):
+
+class MenuOrder(models.Model):
     '''
     Global ordering for items
     '''
@@ -49,6 +51,7 @@ class OrderedItem(MenuItem):
         max_digits=MenuItem._order_digits * MAX_NESTING,
         decimal_places=0,
     )
+    menu_item = models.OneToOneField('MenuItem', on_delete=models.CASCADE)
 
 
 receiver(post_save, sender=MenuItem)(MenuItem.post_save)
