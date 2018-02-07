@@ -14,9 +14,9 @@ def create_admin(apps, se):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('menu', '0004_auto_20180206_1552'),
-    ]
+    initial = True
+
+    dependencies = []
 
     operations = [
         migrations.RunPython(create_admin)
