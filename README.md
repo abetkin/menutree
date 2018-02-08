@@ -34,8 +34,8 @@ Then you can run the server:
 Implementation
 ------
 
-The logic turn around the `MenuItem` model in `menu` app.
-Every menu item can have parent and should have a unique order
+The logic turns around the `MenuItem` model in `menu` app.
+Every menu item can have a parent and should have a unique order
 among other child items of that parent (even if parent is `None` i. e. it is the root item).
 
 There is also `GlobalId` model that lets you make an ordered list of all menu items in the database. The corresponding `GlobalId` record is inserted/updated on the `post_save` of `MenuItem`.
