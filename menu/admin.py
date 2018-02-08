@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.forms import formsets
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 
 # Register your models here.
 
@@ -17,21 +18,46 @@ class MenuItems(admin.TabularInline):
         )
         fs = super().get_formset(request, **kwargs)
         class MenuItemsFormSet(fs):
-            
-            def save(self, commit=False):
-                objects = super().save(commit=False)
-                existing = [
-                    o.pk for o in objects if o.pk is not None
+
+            def save(self, commit=True):
+                """
+                Set the default values for the order of menu items,
+                in case it's not provided
+                """
+                extra_forms = [
+                    f for f in self.extra_forms if f.has_changed()
                 ]
-                self.model.objects.filter(pk__in=existing).delete()
-                orders_list = [o.order for o in objects]
-                if not all(o is not None for o in orders_list):
-                    orders_list = range(1, len(objects) + 1)
-                for obj, order in zip(objects, orders_list):
-                    obj.pk = None
-                    obj.order = order
-                    obj.save()
-                return objects
+                objects = [
+                    f.instance for f in self.initial_forms + extra_forms
+                ]
+                if all(
+                    o.order is None
+                    for o in objects
+                ):
+                    for i, o in enumerate(objects):
+                        o.order = i + 1
+                super().save(commit=commit)
+
+            def full_clean(self):
+                """
+                Check that order of menu items is valid, in case it is provided
+                for every menu item
+                """
+                super().full_clean()
+                if not hasattr(self, 'cleaned_data'):
+                    return
+                data = [
+                    d for d in self.cleaned_data if d
+                ]
+                orders = {o['order'] for o in data}
+                if orders == {None}:
+                    # Order is not provided, nothing to validate
+                    return
+                if orders != set(range(1, len(data) + 1)):
+                    e = ValidationError(
+                        message=f"Menu items should have orders from 1 to {len(data)}"
+                    )
+                    self._non_form_errors = self.error_class(e.error_list)
 
         return MenuItemsFormSet
 

@@ -6,6 +6,27 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+class MenuItem(models.Model):
+    title = models.CharField(max_length=50)
+    parent = models.ForeignKey('MenuItem', on_delete=models.CASCADE, null=True, blank=True)
+    tooltip = models.CharField(max_length=200, null=True, blank=True)
+    order = models.IntegerField(
+        null=True, blank=True,
+        help_text="Order relative to its parent",
+    )
+
+    def __str__(self):
+        return self.title
+
+    def save(self, **kw):
+        if self.order is None:
+            self.order = self.get_default_order()
+        super().save(**kw)
+
+    def get_default_order(self):
+        return self.__class__.objects.filter(parent__isnull=True).count() + 1
+
+
 class GlobalId(models.Model):
     MAX_NESTING = 20
     ORDER_DIGITS = 2
@@ -30,26 +51,6 @@ class GlobalId(models.Model):
         ]
         return ''.join(['0.'] + orders_list)
 
-
-class MenuItem(models.Model):
-    title = models.CharField(max_length=50)
-    parent = models.ForeignKey('MenuItem', on_delete=models.CASCADE, null=True, blank=True)
-    tooltip = models.CharField(max_length=200, null=True, blank=True)
-    order = models.IntegerField(
-        null=True, blank=True,
-        help_text="Order relative to its parent",
-    )
-
-    def __str__(self):
-        return self.title
-
-    def save(self, **kw):
-        if self.order is None:
-            self.order = self.get_default_order()
-        super().save(**kw)
-
-    def get_default_order(self):
-        return self.__class__.objects.filter(parent__isnull=True).count() + 1
 
 
 
