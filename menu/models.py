@@ -11,7 +11,6 @@ class MenuItem(models.Model):
     parent = models.ForeignKey('MenuItem', on_delete=models.CASCADE, null=True, blank=True)
     tooltip = models.CharField(max_length=200, null=True, blank=True)
     order = models.IntegerField(
-        # null=True, blank=True,
         help_text="Order relative to its parent",
     )
 
@@ -24,7 +23,7 @@ class MenuItem(models.Model):
         super().save(**kw)
 
     def get_default_order(self):
-        return self.__class__.objects.filter(parent__isnull=True).count() + 1
+        return self.__class__.objects.filter(parent=self.parent).count() + 1
 
 
 class GlobalId(models.Model):

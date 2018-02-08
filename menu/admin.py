@@ -15,6 +15,10 @@ class InlineMenuItemForm(forms.ModelForm):
     order = forms.IntegerField(required=False)
 
 
+class MenuItemForm(forms.ModelForm):
+    order = forms.IntegerField(required=False)
+
+
 class MenuItems(admin.TabularInline):
     model = MenuItem
     form = InlineMenuItemForm
@@ -78,6 +82,7 @@ class MenuItemAdmin(admin.ModelAdmin):
     fields = [
         'title', 'parent', 'tooltip', 'order'
     ]
+    form = MenuItemForm
 
     list_display = [global_id, 'title']
     ordering = ['globalid__global_id']
