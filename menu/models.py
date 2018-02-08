@@ -11,7 +11,7 @@ class MenuItem(models.Model):
     parent = models.ForeignKey('MenuItem', on_delete=models.CASCADE, null=True, blank=True)
     tooltip = models.CharField(max_length=200, null=True, blank=True)
     order = models.IntegerField(
-        null=True, blank=True,
+        # null=True, blank=True,
         help_text="Order relative to its parent",
     )
 

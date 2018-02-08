@@ -7,15 +7,19 @@ from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 
 from .models import *
 
+class InlineMenuItemForm(forms.ModelForm):
+    fields = [
+        'title', 'tooltip', 'order',
+    ]
+
+    order = forms.IntegerField(required=False)
+
+
 class MenuItems(admin.TabularInline):
     model = MenuItem
+    form = InlineMenuItemForm
 
     def get_formset(self, request, obj=None, **kwargs):
-        kwargs.update(
-            fields=[
-                'title', 'tooltip', 'order',
-            ]
-        )
         fs = super().get_formset(request, **kwargs)
         class MenuItemsFormSet(fs):
 
