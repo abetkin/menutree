@@ -34,7 +34,7 @@ Then you can run the server:
 Implementation
 ------
 
-The logic turns around the [`MenuItem`](https://github.com/abetkin/menutree/blob/master/menu/models.py#L9) model in `menu` app.
+The logic revolves around the [`MenuItem`](https://github.com/abetkin/menutree/blob/master/menu/models.py#L9) model in `menu` app.
 Every menu item can have a parent and should have a unique order
 among other child items of that parent (even if parent is `None` i. e. it is the root item).
 
