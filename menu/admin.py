@@ -8,10 +8,6 @@ from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from .models import *
 
 class InlineMenuItemForm(forms.ModelForm):
-    fields = [
-        'title', 'tooltip', 'order',
-    ]
-
     order = forms.IntegerField(required=False)
 
 
@@ -22,11 +18,13 @@ class MenuItemForm(forms.ModelForm):
 class MenuItems(admin.TabularInline):
     model = MenuItem
     form = InlineMenuItemForm
+    fields = [
+        'title', 'tooltip', 'order',
+    ]
 
-    def get_formset(self, request, obj=None, **kwargs):
-        fs = super().get_formset(request, **kwargs)
+    def get_formset(self, request, obj=None, fields=None, **kwargs):
+        fs = super().get_formset(request, fields=self.fields, **kwargs)
         class MenuItemsFormSet(fs):
-
             def save(self, commit=True):
                 """
                 Set the default values for the order of menu items,
